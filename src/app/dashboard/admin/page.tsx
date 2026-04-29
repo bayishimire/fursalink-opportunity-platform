@@ -96,6 +96,7 @@ export default function AdminDashboard() {
     experience: 'Not Required',
     level: 'programming',
     video_url: '',
+    image: null as string | null,
     exam_url: ''
   })
 
@@ -255,10 +256,22 @@ export default function AdminDashboard() {
       experience: item.experience || 'Not Required',
       level: item.level || 'programming',
       video_url: item.video_url || '',
+      image: item.image_url || null,
       exam_url: item.exam_url || ''
     });
-    setActiveTab('jobs');
+    setActiveTab(item.category === 'job' ? 'jobs' : item.category === 'scholarship' ? 'scholarships' : 'courses');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  const handleJobImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setJobForm({ ...jobForm, image: reader.result as string })
+      }
+      reader.readAsDataURL(file)
+    }
   }
 
   const filteredUsers = users.filter(user =>
@@ -287,7 +300,7 @@ export default function AdminDashboard() {
           <Box p={2} bg="blue.900" rounded="xl" color="white"><FiActivity size={16} /></Box>
           <Heading size="lg" color="blue.900" fontWeight="900">Platform Command Center</Heading>
         </HStack>
-        
+
         <SimpleGrid columns={{ base: 2, md: 5 }} gap={4}>
           <StatCard icon={FiUsers} label="TOTAL USERS" value={stats?.summary?.totalUsers || 0} color="blue" />
           <StatCard icon={FiUserCheck} label="ACTIVE LOGINS" value={stats?.summary?.activeLogins || 0} color="green" />
@@ -331,36 +344,91 @@ export default function AdminDashboard() {
         </Box>
       </SimpleGrid>
 
-      <Box mt={4} bg="white" p={5} rounded="2xl" shadow="sm" border="1px solid" borderColor="gray.50">
-        <Flex justify="space-between" align="center" mb={4}>
-          <Heading size="md" color="blue.900" fontWeight="900">Active Publications</Heading>
-          <HStack bg="gray.50" px={3} py={1.5} rounded="xl" w="220px">
+      <Box mt={4} bg="white" p={6} rounded="2xl" shadow="sm" border="1px solid" borderColor="gray.50">
+        <Flex justify="space-between" align="center" mb={6}>
+          <Heading size="md" color="blue.900" fontWeight="900">Active Publications Command Center</Heading>
+          <HStack bg="gray.50" px={3} py={1.5} rounded="xl" w="300px">
             <FiSearch size={14} color="gray" />
-            <Input variant="plain" placeholder="Search resources..." fontSize="12px" fontWeight="medium" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} border="none" />
+            <Input variant="subtle" placeholder="Search across all publications..." fontSize="12px" fontWeight="medium" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} border="none" />
           </HStack>
         </Flex>
-        <Table.Root size="md" variant="plain">
-          <Table.Header>
-            <Table.Row borderBottom="1px solid" borderColor="gray.50">
-              <Table.ColumnHeader py={3} color="gray.400" fontWeight="black" fontSize="10px">TITLE</Table.ColumnHeader>
-              <Table.ColumnHeader py={3} color="gray.400" fontWeight="black" fontSize="10px">ORGANIZATION</Table.ColumnHeader>
-              <Table.ColumnHeader py={3} color="gray.400" fontWeight="black" fontSize="10px">CATEGORY</Table.ColumnHeader>
-              <Table.ColumnHeader py={3} color="gray.400" fontWeight="black" fontSize="10px" textAlign="right">OPERATIONS</Table.ColumnHeader>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {dbJobs.filter(j => j.title.toLowerCase().includes(searchTerm.toLowerCase())).slice(0, 15).map((job, i) => (
-              <Table.Row key={i} borderBottom="1px solid" borderColor="gray.50" _hover={{ bg: 'blue.50' }}>
-                <Table.Cell py={3}><Text fontWeight="900" fontSize="12px" color="blue.900">{job.title}</Text></Table.Cell>
-                <Table.Cell py={3}><Text fontSize="11px" fontWeight="bold" color="gray.500">{job.company}</Text></Table.Cell>
-                <Table.Cell py={3}><Badge fontSize="9px" px={2} py={0.5} variant="subtle" colorPalette="blue" rounded="full">{job.category?.toUpperCase()}</Badge></Table.Cell>
-                <Table.Cell py={3} textAlign="right">
-                  <Button size="sm" variant="ghost" colorPalette="red" onClick={() => deleteJob(job.id)}><FiTrash2 size={12} /></Button>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table.Root>
+
+        <SimpleGrid columns={{ base: 1, xl: 3 }} gap={8}>
+          {/* Courses Column */}
+          <Box borderRight={{ xl: "1px solid" }} borderColor="gray.50" pr={{ xl: 4 }}>
+            <HStack mb={4} color="green.600">
+               <FiBookOpen size={16} />
+               <Heading size="sm" fontWeight="black">LEARNING RESOURCES</Heading>
+               <Badge variant="subtle" colorPalette="green" rounded="md">{dbJobs.filter(j => j.category === 'course').length}</Badge>
+            </HStack>
+            <VStack align="stretch" gap={3}>
+              {dbJobs.filter(j => j.category === 'course' && j.title.toLowerCase().includes(searchTerm.toLowerCase())).map((job, i) => (
+                <Box key={i} p={3} bg="gray.50" rounded="xl" _hover={{ bg: 'green.50' }} transition="0.2s">
+                  <Flex justify="space-between" align="center">
+                    <Box flex={1}>
+                      <Text fontWeight="900" fontSize="12px" color="blue.900" lineClamp={1}>{job.title}</Text>
+                      <Text fontSize="10px" fontWeight="bold" color="gray.400">{job.company}</Text>
+                    </Box>
+                    <HStack gap={1}>
+                      <Button size="xs" variant="ghost" colorPalette="blue" onClick={() => startEdit(job)}><FiEdit2 size={10} /></Button>
+                      <Button size="xs" variant="ghost" colorPalette="red" onClick={() => deleteJob(job.id)}><FiTrash2 size={10} /></Button>
+                    </HStack>
+                  </Flex>
+                </Box>
+              ))}
+            </VStack>
+          </Box>
+
+          {/* Scholarships Column */}
+          <Box borderRight={{ xl: "1px solid" }} borderColor="gray.50" px={{ xl: 4 }}>
+            <HStack mb={4} color="purple.600">
+               <FiZap size={16} />
+               <Heading size="sm" fontWeight="black">SCHOLARSHIP GRANTS</Heading>
+               <Badge variant="subtle" colorPalette="purple" rounded="md">{dbJobs.filter(j => j.category === 'scholarship').length}</Badge>
+            </HStack>
+            <VStack align="stretch" gap={3}>
+              {dbJobs.filter(j => j.category === 'scholarship' && j.title.toLowerCase().includes(searchTerm.toLowerCase())).map((job, i) => (
+                <Box key={i} p={3} bg="gray.50" rounded="xl" _hover={{ bg: 'purple.50' }} transition="0.2s">
+                  <Flex justify="space-between" align="center">
+                    <Box flex={1}>
+                      <Text fontWeight="900" fontSize="12px" color="blue.900" lineClamp={1}>{job.title}</Text>
+                      <Text fontSize="10px" fontWeight="bold" color="gray.400">{job.company}</Text>
+                    </Box>
+                    <HStack gap={1}>
+                      <Button size="xs" variant="ghost" colorPalette="blue" onClick={() => startEdit(job)}><FiEdit2 size={10} /></Button>
+                      <Button size="xs" variant="ghost" colorPalette="red" onClick={() => deleteJob(job.id)}><FiTrash2 size={10} /></Button>
+                    </HStack>
+                  </Flex>
+                </Box>
+              ))}
+            </VStack>
+          </Box>
+
+          {/* Jobs Column */}
+          <Box pl={{ xl: 4 }}>
+            <HStack mb={4} color="blue.600">
+               <FiBriefcase size={16} />
+               <Heading size="sm" fontWeight="black">CAREER OPPORTUNITIES</Heading>
+               <Badge variant="subtle" colorPalette="blue" rounded="md">{dbJobs.filter(j => (j.category === 'job' || !j.category)).length}</Badge>
+            </HStack>
+            <VStack align="stretch" gap={3}>
+              {dbJobs.filter(j => (j.category === 'job' || !j.category) && j.title.toLowerCase().includes(searchTerm.toLowerCase())).map((job, i) => (
+                <Box key={i} p={3} bg="gray.50" rounded="xl" _hover={{ bg: 'blue.50' }} transition="0.2s">
+                  <Flex justify="space-between" align="center">
+                    <Box flex={1}>
+                      <Text fontWeight="900" fontSize="12px" color="blue.900" lineClamp={1}>{job.title}</Text>
+                      <Text fontSize="10px" fontWeight="bold" color="gray.400">{job.company}</Text>
+                    </Box>
+                    <HStack gap={1}>
+                      <Button size="xs" variant="ghost" colorPalette="blue" onClick={() => startEdit(job)}><FiEdit2 size={10} /></Button>
+                      <Button size="xs" variant="ghost" colorPalette="red" onClick={() => deleteJob(job.id)}><FiTrash2 size={10} /></Button>
+                    </HStack>
+                  </Flex>
+                </Box>
+              ))}
+            </VStack>
+          </Box>
+        </SimpleGrid>
       </Box>
     </VStack>
   )
@@ -387,7 +455,7 @@ export default function AdminDashboard() {
         </Box>
         <Box flex="1" bg="white" p={6} rounded="3xl" shadow="sm" border="1px solid" borderColor="gray.50">
           <Heading size="md" mb={6} color="blue.900" fontWeight="900">Identity Records</Heading>
-          <Table.Root size="md" variant="plain">
+          <Table.Root size="md" variant="line">
             <Table.Header>
               <Table.Row borderBottom="1px solid" borderColor="gray.50">
                 <Table.ColumnHeader py={3} fontSize="10px" color="gray.400">IDENTITY</Table.ColumnHeader>
@@ -475,30 +543,84 @@ export default function AdminDashboard() {
         </Flex>
         <Box bg="white" p={8} rounded="3xl" shadow="sm" border="1px solid" borderColor="gray.50">
           <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+            <GridItem colSpan={2}>
+              <Box border="2px dashed" borderColor="gray.100" p={5} rounded="2xl" textAlign="center" cursor="pointer" onClick={() => jobFileRef.current?.click()} _hover={{ bg: 'gray.50', borderColor: 'blue.200' }} transition="0.3s">
+                {jobForm.image ? (
+                  <Box position="relative" display="inline-block">
+                    <img src={jobForm.image} style={{ maxHeight: '150px', borderRadius: '12px', margin: 'auto' }} alt="P" />
+                    <Button size="xs" colorPalette="red" position="absolute" top="-10px" right="-10px" onClick={(e) => { e.stopPropagation(); setJobForm({ ...jobForm, image: null }) }}>X</Button>
+                  </Box>
+                ) : (
+                  <VStack gap={1}>
+                    <FiUploadCloud size={30} color={config.color === 'blue.900' ? '#3b82f6' : config.color === 'purple.900' ? '#a855f7' : '#22c55e'} />
+                    <Text fontSize="11px" fontWeight="black" color="gray.400">UPLOAD COVER IMAGE (OPTIONAL)</Text>
+                  </VStack>
+                )}
+                <input type="file" ref={jobFileRef} onChange={handleJobImageUpload} style={{ display: 'none' }} accept="image/*" />
+              </Box>
+            </GridItem>
+
+            <GridItem colSpan={2}>
+              <VStack align="stretch" gap={2}>
+                <Input placeholder="Video URL (YouTube/Vimeo/Direct Link) - Optional" bg="gray.50" h="44px" fontSize="12px" fontWeight="bold" rounded="xl" px={4} value={jobForm.video_url} onChange={e => setJobForm({ ...jobForm, video_url: e.target.value })} border="none" />
+                {jobForm.video_url && (
+                  <Box mt={2} rounded="xl" overflow="hidden" shadow="md">
+                    {/* Simple video player preview */}
+                    <iframe
+                      width="100%"
+                      height="200px"
+                      src={jobForm.video_url.includes('youtube.com') ? jobForm.video_url.replace('watch?v=', 'embed/') : jobForm.video_url}
+                      style={{ border: 'none' }}
+                      title="Video preview"
+                    />
+                  </Box>
+                )}
+              </VStack>
+            </GridItem>
+
             <GridItem colSpan={2}><Input placeholder="Title" bg="gray.50" h="44px" fontSize="13px" fontWeight="bold" rounded="xl" px={4} value={jobForm.title} onChange={e => setJobForm({ ...jobForm, title: e.target.value })} border="none" /></GridItem>
-            <GridItem><Input placeholder="Organization" bg="gray.50" h="44px" fontSize="12px" fontWeight="bold" rounded="xl" px={4} value={jobForm.company} onChange={e => setJobForm({ ...jobForm, company: e.target.value })} border="none" /></GridItem>
-            <GridItem><Input placeholder="Location" bg="gray.50" h="44px" fontSize="12px" fontWeight="bold" rounded="xl" px={4} value={jobForm.location} onChange={e => setJobForm({ ...jobForm, location: e.target.value })} border="none" /></GridItem>
+            <GridItem><Input placeholder="Organization / Provider" bg="gray.50" h="44px" fontSize="12px" fontWeight="bold" rounded="xl" px={4} value={jobForm.company} onChange={e => setJobForm({ ...jobForm, company: e.target.value })} border="none" /></GridItem>
+            <GridItem><Input placeholder="Location / Mode" bg="gray.50" h="44px" fontSize="12px" fontWeight="bold" rounded="xl" px={4} value={jobForm.location} onChange={e => setJobForm({ ...jobForm, location: e.target.value })} border="none" /></GridItem>
+            <GridItem colSpan={2}><Input placeholder="Application/Registration Link (URL)" bg="gray.50" h="44px" fontSize="12px" fontWeight="bold" rounded="xl" px={4} value={jobForm.url} onChange={e => setJobForm({ ...jobForm, url: e.target.value })} border="none" color="blue.600" /></GridItem>
+            <GridItem colSpan={2}><Input placeholder="Practice Exam Link (Optional URL)" bg="gray.50" h="44px" fontSize="12px" fontWeight="bold" rounded="xl" px={4} value={jobForm.exam_url} onChange={e => setJobForm({ ...jobForm, exam_url: e.target.value })} border="none" color="orange.600" /></GridItem>
             <GridItem colSpan={2}><Textarea placeholder="Construct a detailed broadcast description..." bg="gray.50" fontSize="12px" fontWeight="medium" p={4} rows={6} rounded="xl" value={jobForm.description} onChange={e => setJobForm({ ...jobForm, description: e.target.value })} border="none" /></GridItem>
             <GridItem colSpan={2} pt={4}>
-              <Button 
+              <Button
                 w="full" h="50px" bg={config.color} color="white" fontSize="14px" fontWeight="black" rounded="2xl" shadow="lg"
+                loading={isSubmitting}
                 _hover={{ transform: 'translateY(-2px)', shadow: 'xl' }}
                 onClick={async () => {
                   try {
                     setIsSubmitting(true);
                     const categoryMap = { jobs: 'job', scholarships: 'scholarship', courses: 'course' };
                     const category = (categoryMap as any)[activeTab] || 'job';
-                    await fetch('/api/jobs', {
-                      method: 'POST',
+
+                    const url = editingId ? `/api/jobs/${editingId}` : '/api/jobs';
+                    const method = editingId ? 'PUT' : 'POST';
+
+                    const res = await fetch(url, {
+                      method,
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ ...jobForm, category, deadline: '2026-12-31' })
                     });
-                    fetchContent();
-                    setActiveTab('dashboard');
+                    if (res.ok) {
+                      showToast(editingId ? 'Broadcast updated successfully' : 'Broadcast deployed successfully');
+                      setJobForm({
+                        title: '', company: '', deadline: '', url: '', description: '', location: '',
+                        startDate: '', experience: 'Not Required', level: 'programming', video_url: '', image: null, exam_url: ''
+                      });
+                      setEditingId(null);
+                      fetchContent();
+                      setActiveTab('dashboard');
+                    } else {
+                      showToast(editingId ? 'Failed to update broadcast' : 'Failed to deploy broadcast', 'error');
+                    }
+                  } catch (e) {
+                    showToast('Network error', 'error');
                   } finally { setIsSubmitting(false); }
                 }}
               >
-                DEPLOY BROADCAST
+                {editingId ? 'UPDATE BROADCAST' : 'DEPLOY BROADCAST'}
               </Button>
             </GridItem>
           </Grid>
@@ -508,7 +630,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <Box pb={10} maxW="1200px" mx="auto" px={6}>
+    <Box pb={10} maxW="1600px" mx="auto" px={6}>
 
       {/* ── Toast Notification ── */}
       <style>{`
@@ -552,7 +674,35 @@ export default function AdminDashboard() {
         </VStack>
         <HStack gap={3}>
           <Button variant="ghost" size="md" fontWeight="900" fontSize="12px" rounded="xl" onClick={() => setActiveTab('dashboard')} bg={activeTab === 'dashboard' ? 'blue.50' : 'transparent'} color={activeTab === 'dashboard' ? 'blue.600' : 'gray.500'}>OVERVIEW</Button>
-          <Button variant="ghost" size="md" fontWeight="900" fontSize="12px" rounded="xl" onClick={() => setActiveTab('users')} bg={activeTab === 'users' ? 'blue.50' : 'transparent'} color={activeTab === 'users' ? 'blue.600' : 'gray.500'}>IDENTITIES</Button>
+          <Button variant="ghost" size="md" fontWeight="900" fontSize="12px" rounded="xl" onClick={() => setActiveTab('users')} bg={activeTab === 'users' ? 'blue.50' : 'transparent'} color={activeTab === 'users' ? 'blue.600' : 'gray.500'} position="relative">
+            <HStack gap={1.5}>
+              <Box position="relative">
+                <FiUsers size={14} />
+                {users.length > 0 && (
+                  <Box
+                    position="absolute"
+                    top="-4px"
+                    right="-5px"
+                    bg="blue.500"
+                    color="white"
+                    fontSize="8px"
+                    fontWeight="black"
+                    rounded="full"
+                    minW="14px"
+                    h="14px"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    px="2px"
+                    lineHeight="1"
+                  >
+                    {users.length}
+                  </Box>
+                )}
+              </Box>
+              <Text fontSize="12px" fontWeight="900">CONTROL USER</Text>
+            </HStack>
+          </Button>
           <Button variant="ghost" size="md" fontWeight="900" fontSize="12px" rounded="xl" onClick={() => setActiveTab('applications')} bg={activeTab === 'applications' ? 'blue.50' : 'transparent'} color={activeTab === 'applications' ? 'blue.600' : 'gray.500'} position="relative">
             <HStack gap={1.5}>
               <Box position="relative">
@@ -562,7 +712,7 @@ export default function AdminDashboard() {
                     position="absolute"
                     top="-4px"
                     right="-5px"
-                    bg="red.500"
+                    bg="orange.500"
                     color="white"
                     fontSize="8px"
                     fontWeight="black"
@@ -580,7 +730,7 @@ export default function AdminDashboard() {
                   </Box>
                 )}
               </Box>
-              <Text fontSize="12px" fontWeight="900">ENROLLMENTS</Text>
+              <Text fontSize="12px" fontWeight="900">LIVE NOTIFICATION</Text>
             </HStack>
           </Button>
           <Separator orientation="vertical" h="20px" mx={2} />

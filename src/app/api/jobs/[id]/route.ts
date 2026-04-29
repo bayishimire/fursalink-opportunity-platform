@@ -27,6 +27,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const start_date = body.start_date || null;
     const experience = body.experience || 'Not Required';
     const category = body.category || 'job';
+    const level = body.level || 'programming';
+    const video_url = body.video_url || null;
+    const exam_url = body.exam_url || null;
     const image = body.image || null;
 
     let image_url = null;
@@ -43,8 +46,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     const pool = getDb();
     
-    let query = 'UPDATE jobs SET title=?, company=?, deadline=?, application_url=?, description=?, location=?, start_date=?, experience=?, category=?';
-    const values = [title, company, deadline, url, description, location, start_date, experience, category];
+    let query = 'UPDATE jobs SET title=?, company=?, deadline=?, application_url=?, description=?, location=?, start_date=?, experience=?, category=?, level=?, video_url=?, exam_url=?';
+    const values = [title, company, deadline, url, description, location, start_date, experience, category, level, video_url, exam_url];
     
     if (image_url) {
       query += ', image_url=?';

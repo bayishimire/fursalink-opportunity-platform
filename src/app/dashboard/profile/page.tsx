@@ -6,14 +6,22 @@ import {
   Spinner, Center, useToast, Badge, SimpleGrid,
   Separator, Input, Icon, HStack
 } from '@chakra-ui/react'
-import { FiCamera, FiUser, FiMail, FiShield, FiStar, FiCalendar, FiUploadCloud } from 'react-icons/fi'
+import { FiCamera, FiUser, FiMail, FiShield, FiStar, FiCalendar, FiUploadCloud, FiSave, FiCheckCircle } from 'react-icons/fi'
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null)
   const [profileData, setProfileData] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isUploading, setIsUploading] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [editName, setEditName] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 2500)
+  }
 
   useEffect(() => {
     // Load auth user from local storage
@@ -33,10 +41,11 @@ export default function ProfilePage() {
       const data = await res.json()
       if (data.user) {
         setProfileData(data.user)
+        setEditName(data.user.name)
         
-        // Update local storage if DB has newer picture (like from another device)
-        if (user && data.user.picture !== user.picture) {
-          const updatedUser = { ...user, picture: data.user.picture }
+        // Update local storage if DB has newer picture or name (like from another device)
+        if (user && (data.user.picture !== user.picture || data.user.name !== user.name)) {
+          const updatedUser = { ...user, name: data.user.name, picture: data.user.picture }
           localStorage.setItem('user', JSON.stringify(updatedUser))
           setUser(updatedUser)
           window.dispatchEvent(new CustomEvent('user-update', { detail: updatedUser }))
@@ -54,7 +63,7 @@ export default function ProfilePage() {
     if (!file) return
 
     if (file.size > 2 * 1024 * 1024) {
-      alert('File is too large. Please choose an image under 2MB.')
+      showToast('File is too large. Max 2MB.', 'error')
       return
     }
 
@@ -78,16 +87,48 @@ export default function ProfilePage() {
           localStorage.setItem('user', JSON.stringify(updatedUser))
           setUser(updatedUser)
           window.dispatchEvent(new CustomEvent('user-update', { detail: updatedUser }))
+          showToast('Profile photo updated successfully')
         }
       } catch (error) {
         console.error('Failed to update picture', error)
-        alert('Failed to update picture. Please try again.')
+        showToast('Failed to update picture', 'error')
       } finally {
         setIsUploading(false)
       }
     }
 
     reader.readAsDataURL(file)
+  }
+
+  const handleSaveProfile = async () => {
+    if (!editName.trim()) {
+      showToast('Name cannot be empty', 'error')
+      return
+    }
+
+    setIsSaving(true)
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: user.id, name: editName })
+      })
+      
+      const data = await res.json()
+      if (data.user) {
+        setProfileData(data.user)
+        const updatedUser = { ...user, name: data.user.name }
+        localStorage.setItem('user', JSON.stringify(updatedUser))
+        setUser(updatedUser)
+        window.dispatchEvent(new CustomEvent('user-update', { detail: updatedUser }))
+        showToast('Identity updated across platform')
+      }
+    } catch (error) {
+      console.error('Failed to update name', error)
+      showToast('Failed to sync identity', 'error')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   if (isLoading || !profileData) return (
@@ -110,6 +151,15 @@ export default function ProfilePage() {
 
   return (
     <Box maxW="850px" mx="auto" p={{ base: 4, md: 8 }}>
+      {/* Toast Notification */}
+      <style>{`@keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`}</style>
+      {toast && (
+        <Box position="fixed" top="24px" right="24px" zIndex={9999} bg={toast.type === 'success' ? 'green.500' : 'red.500'} color="white" px={5} py={3} rounded="2xl" shadow="2xl" display="flex" alignItems="center" gap={3} style={{ animation: 'slideInRight 0.3s ease-out' }}>
+          <Icon as={toast.type === 'success' ? FiCheckCircle : FiShield} />
+          <Text fontWeight="bold" fontSize="13px">{toast.message}</Text>
+        </Box>
+      )}
+
       <VStack gap={6} align="stretch">
         <Box 
           bg="white" 
@@ -131,6 +181,9 @@ export default function ProfilePage() {
                   border="4px solid white" 
                   shadow="md"
                   position="relative"
+                  bg="gray.50"
+                  _hover={{ shadow: 'xl' }}
+                  transition="0.3s"
                 >
                   {profileData.picture ? (
                     <img 
@@ -170,10 +223,12 @@ export default function ProfilePage() {
                 <Button 
                   size="sm" 
                   variant="outline" 
-                  colorScheme="blue" 
+                   colorPalette="blue"
                   w="full" 
                   mt={4} 
                   shadow="sm"
+                  rounded="xl"
+                  fontWeight="black"
                   onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
                   disabled={isUploading}
                 >
@@ -181,7 +236,7 @@ export default function ProfilePage() {
                 </Button>
                 
                 {/* Hidden File Input */}
-                <Input 
+                <input 
                   type="file" 
                   accept="image/png, image/jpeg, image/webp" 
                   hidden 
@@ -189,53 +244,82 @@ export default function ProfilePage() {
                   onChange={handleFileChange} 
                 />
               </Box>
-              <Text fontSize="10px" color="gray.400" textAlign="center">
-                JPG or PNG. Max 2MB.
+              <Text fontSize="10px" color="gray.400" textAlign="center" fontWeight="bold">
+                JPG, PNG or WEBP. Max 2MB.
               </Text>
             </VStack>
 
-            <Separator orientation="vertical" h="180px" display={{ base: 'none', md: 'block' }} />
+            <Separator orientation="vertical" h="220px" display={{ base: 'none', md: 'block' }} />
 
             {/* Right: User Details */}
             <VStack align="flex-start" flex={1} gap={6} w="full">
               <Box w="full">
                 <HStack justify="space-between" align="center" mb={1}>
-                  <Heading size="lg" color="gray.800" fontWeight="black" letterSpacing="-0.5px">
-                    {profileData.name}
+                  <Heading size="lg" color="blue.900" fontWeight="900" letterSpacing="-0.5px">
+                    Identity Management
                   </Heading>
                   <Badge 
                     colorPalette={roleColors[profileData.role] || 'gray'} 
                     px={3} py={1} 
                     rounded="full" 
                     fontSize="xs"
-                    fontWeight="bold"
-                    letterSpacing="wide"
+                    fontWeight="black"
+                    variant="surface"
                   >
                     {roleLabels[profileData.role] || profileData.role.toUpperCase()}
                   </Badge>
                 </HStack>
-                <Text color="gray.500" fontSize="sm" fontWeight="medium">
-                  Settings & Details
+                <Text color="gray.500" fontSize="xs" fontWeight="bold">
+                  Update your display name and profile aesthetics
                 </Text>
               </Box>
 
-              <SimpleGrid columns={{ base: 1, sm: 2 }} gap={4} w="full" mt={2}>
-                <Box p={4} rounded="xl" bg="gray.50" borderWidth="1px" borderColor="gray.100">
-                  <HStack color="gray.500" mb={1}>
-                    <FiUser size={14} />
-                    <Text fontSize="10px" fontWeight="bold" letterSpacing="wide">NAME</Text>
+              <VStack align="stretch" gap={4} w="full">
+                <Box p={4} rounded="2xl" bg="gray.50" borderWidth="1px" borderColor="gray.100">
+                  <HStack color="gray.400" mb={1.5}>
+                    <FiUser size={12} />
+                    <Text fontSize="10px" fontWeight="black" letterSpacing="1px">FULL NAME / DISPLAY IDENTITY</Text>
                   </HStack>
-                  <Text fontWeight="bold" fontSize="sm" color="gray.800">{profileData.name}</Text>
+                  <Input 
+                    variant="subtle" 
+                    fontSize="sm" 
+                    fontWeight="bold" 
+                    value={editName} 
+                    onChange={e => setEditName(e.target.value)} 
+                    bg="white"
+                    h="44px"
+                    rounded="xl"
+                    border="1px solid"
+                    borderColor="gray.100"
+                    _focus={{ borderColor: 'blue.300', bg: 'white' }}
+                  />
                 </Box>
 
-                 <Box p={4} rounded="xl" bg="gray.50" borderWidth="1px" borderColor="gray.100">
-                  <HStack color="gray.500" mb={1}>
-                    <FiMail size={14} />
-                    <Text fontSize="10px" fontWeight="bold" letterSpacing="wide">EMAIL</Text>
+                 <Box p={4} rounded="2xl" bg="gray.50" borderWidth="1px" borderColor="gray.100" opacity={0.8}>
+                  <HStack color="gray.400" mb={1.5}>
+                    <FiMail size={12} />
+                    <Text fontSize="10px" fontWeight="black" letterSpacing="1px">PERMANENT EMAIL ADDRESS</Text>
                   </HStack>
-                  <Text fontWeight="bold" fontSize="sm" color="gray.800" isTruncated>{profileData.email}</Text>
+                  <Text fontWeight="bold" fontSize="sm" color="gray.600" px={3}>{profileData.email}</Text>
                 </Box>
-              </SimpleGrid>
+
+                <Button 
+                  w="full" 
+                  h="50px" 
+                  bg="blue.900" 
+                  color="white" 
+                  rounded="xl" 
+                  fontWeight="black" 
+                  fontSize="sm"
+                  shadow="lg"
+                  loading={isSaving}
+                  onClick={handleSaveProfile}
+                  _hover={{ transform: 'translateY(-2px)', shadow: 'xl' }}
+                  gap={2}
+                >
+                  <FiSave /> SAVE IDENTITY SETTINGS
+                </Button>
+              </VStack>
             </VStack>
           </Flex>
         </Box>

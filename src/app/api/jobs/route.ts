@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const description = body.description || null;
     const image = body.image || null;
     const location = body.location || null;
-    const start_date = body.start_date || null;
+    const start_date = body.startDate || body.start_date || null;
     const experience = body.experience || 'Not Required';
      const category = body.category || 'job';
     const level = body.level || 'programming';

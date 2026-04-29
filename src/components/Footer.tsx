@@ -40,7 +40,7 @@ export function Footer() {
           {/* Brand/About Section */}
           <VStack align="flex-start" gap={6}>
             <Box>
-               <img src="/logo.png" alt="Fursa.Link Logo" style={{ height: '50px', filter: 'brightness(1.2)' }} />
+              <img src="/logo.png" alt="Fursa.Link Logo" style={{ height: '50px', filter: 'brightness(1.2)' }} />
             </Box>
             <Text color="gray.400" fontSize="sm" lineHeight="tall">
               Empowering careers through curated opportunities. Fursa.Link is your gateway to local and global jobs, scholarships, and professional growth.
@@ -57,7 +57,7 @@ export function Footer() {
                 <ChakraLink href="#" fontSize="sm" color="gray.400" _hover={{ color: 'white' }}>Courses</ChakraLink>
               </VStack>
               <VStack align="flex-start" gap={3}>
-                <ChakraLink href="#" fontSize="sm" color="gray.400" _hover={{ color: 'white' }}>Projects</ChakraLink>
+                <ChakraLink href="#" fontSize="sm" color="gray.400" _hover={{ color: 'white' }}>Support</ChakraLink>
                 <ChakraLink href="#" fontSize="sm" color="gray.400" _hover={{ color: 'white' }}>About Us</ChakraLink>
                 <ChakraLink href="#" fontSize="sm" color="gray.400" _hover={{ color: 'white' }}>Privacy</ChakraLink>
               </VStack>
@@ -72,12 +72,11 @@ export function Footer() {
                 <ChakraLink
                   key={social.label}
                   href={social.href}
-                  isExternal
                   bg="whiteAlpha.100"
                   p={3}
                   rounded="full"
                   transition="all 0.3s"
-                  _hover={{ 
+                  _hover={{
                     bg: social.color,
                     transform: 'translateY(-3px)',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.4)'
@@ -95,7 +94,7 @@ export function Footer() {
 
         <Box pt={8} borderTop="1px solid" borderColor="whiteAlpha.100">
           <Flex direction={{ base: 'column', md: 'row' }} justify="space-between" align="center" gap={4}>
-            <Text fontSize="sm" color="gray.500">
+            <Text fontSize="sm" color="gray.500" suppressHydrationWarning>
               &copy; {currentYear} Fursa.Link. All rights reserved.
             </Text>
             <HStack gap={6} fontSize="xs" color="gray.600">

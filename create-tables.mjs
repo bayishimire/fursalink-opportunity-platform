@@ -26,6 +26,14 @@ async function main() {
       deadline VARCHAR(100) NOT NULL,
       application_url VARCHAR(255),
       description TEXT,
+      image_url TEXT,
+      location VARCHAR(255),
+      start_date VARCHAR(100),
+      experience VARCHAR(100),
+      category VARCHAR(50),
+      level VARCHAR(50),
+      video_url TEXT,
+      exam_url TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
@@ -39,6 +47,8 @@ async function main() {
       amount VARCHAR(100) NOT NULL,
       application_url VARCHAR(255),
       description TEXT,
+      image_url TEXT,
+      video_url TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);

@@ -93,7 +93,7 @@ export function Navbar() {
         <HStack gap={8} display={{ base: 'none', md: 'flex' }}>
           <Text onClick={() => router.push('/')} fontWeight="bold" fontSize="xs" color="gray.600" letterSpacing="widest" cursor="pointer" _hover={{ color: 'blue.500' }}>HOME</Text>
           <Text onClick={() => router.push('/about')} fontWeight="bold" fontSize="xs" color="gray.600" letterSpacing="widest" cursor="pointer" _hover={{ color: 'blue.500' }}>ABOUT</Text>
-          
+
           {mounted && user && (
             <>
               <Text
@@ -107,7 +107,7 @@ export function Navbar() {
               >
                 DASHBOARD
               </Text>
-              <Text 
+              <Text
                 onClick={() => router.push('/dashboard/projects')}
                 fontWeight="bold" fontSize="xs" color="gray.600" letterSpacing="widest" cursor="pointer" _hover={{ color: 'blue.500' }}
               >
@@ -184,7 +184,7 @@ export function Navbar() {
                     <img src={user.picture} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Profile" />
                   ) : (
                     <Box display="flex" alignItems="center" justifyContent="center" height="100%">
-                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     </Box>
                   )}
                 </Box>

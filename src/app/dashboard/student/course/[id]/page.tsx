@@ -60,8 +60,8 @@ export default function CoursePlayerPage({ params }: { params: Promise<{ id: str
 
   const getEmbedUrl = (url: string) => {
     if (!url) return null;
-    if (url.includes('youtube.com/watch?v=')) return url.replace('watch?v=', 'embed/');
-    if (url.includes('youtu.be/')) return url.replace('youtu.be/', 'youtube.com/embed/');
+    if (url.includes('youtube.com/watch?v=')) return url.replace('watch?v=', 'embed/') + '?autoplay=1&mute=1';
+    if (url.includes('youtu.be/')) return url.replace('youtu.be/', 'youtube.com/embed/') + '?autoplay=1&mute=1';
     return url;
   };
 

@@ -16,28 +16,37 @@ async function main() {
     database: env.DB_NAME || 'fursa_link',
   });
 
-  try {
-    await connection.execute(`ALTER TABLE jobs ADD COLUMN image_url TEXT`);
-    console.log('image_url column added to jobs table!');
-  } catch(e) {
-    if (e.code === 'ER_DUP_FIELDNAME') {
-      console.log('Column already exists!');
-    } else {
-      console.error(e);
+  const columns = [
+    'image_url TEXT',
+    'location VARCHAR(255)',
+    'start_date VARCHAR(100)',
+    'experience VARCHAR(100)',
+    'category VARCHAR(50)',
+    'level VARCHAR(50)',
+    'video_url TEXT',
+    'exam_url TEXT'
+  ];
+
+  for (const col of columns) {
+    try {
+      const colName = col.split(' ')[0];
+      await connection.execute(`ALTER TABLE jobs ADD COLUMN ${col}`);
+      console.log(`Column ${colName} added to jobs table!`);
+    } catch(e) {
+      // Ignore if column already exists
     }
   }
 
-  try {
-    await connection.execute(`ALTER TABLE scholarships ADD COLUMN image_url TEXT`);
-    console.log('image_url column added to scholarships table!');
-  } catch(e) {
-    if (e.code === 'ER_DUP_FIELDNAME') {
-      console.log('Column already exists!');
-    } else {
-      console.error(e);
-    }
-  }
-
+  // Scholarships might need the same columns if they shared the same POST endpoint?
+  // Actually, api/jobs seems to be the main one used in AdminDashboard for all types.
+  // Wait, let's verify if scholarships and courses use a different API.
+  // In AdminDashboard:
+  // const categoryMap = { jobs: 'job', scholarships: 'scholarship', courses: 'course' };
+  // const category = (categoryMap as any)[activeTab] || 'job';
+  // await fetch('/api/jobs', ... { ...jobForm, category ... })
+  
+  // So everything is stored in the `jobs` table with a `category` field!
+  
   process.exit(0);
 }
 

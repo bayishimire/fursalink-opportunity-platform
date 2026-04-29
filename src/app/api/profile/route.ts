@@ -30,14 +30,20 @@ export async function GET(req: Request) {
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    const { id, picture } = body;
+    const { id, name, picture } = body;
 
-    if (!id || !picture) {
-      return NextResponse.json({ error: 'Missing id or picture' }, { status: 400 });
+    if (!id) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
     const pool = getDb();
-    await pool.execute('UPDATE users SET picture = ? WHERE id = ?', [picture, id]);
+    if (name && picture) {
+      await pool.execute('UPDATE users SET name = ?, picture = ? WHERE id = ?', [name, picture, id]);
+    } else if (name) {
+      await pool.execute('UPDATE users SET name = ? WHERE id = ?', [name, id]);
+    } else if (picture) {
+      await pool.execute('UPDATE users SET picture = ? WHERE id = ?', [picture, id]);
+    }
 
     // Fetch the updated user correctly
     const [rows]: any = await pool.execute(
