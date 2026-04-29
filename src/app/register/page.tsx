@@ -218,7 +218,6 @@ export default function RegisterPage() {
                     </Text>
                     <Box position="relative">
                       <select 
-                        w="full" 
                         value={role} 
                         onChange={(e) => setRole(e.target.value)}
                         style={{ 
