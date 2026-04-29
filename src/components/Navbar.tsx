@@ -190,7 +190,7 @@ export function Navbar() {
                 </Box>
                 <VStack align="flex-start" gap={0} minW="80px">
                   <HStack gap={2} w="full" justify="space-between">
-                    <Text fontSize="sm" fontWeight="bold" color="blue.900" lineHeight="1" isTruncated maxW="100px">{user.name}</Text>
+                    <Text fontSize="sm" fontWeight="bold" color="blue.900" lineHeight="1" truncate maxW="100px">{user.name}</Text>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2b6cb0" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>

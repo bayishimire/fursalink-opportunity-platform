@@ -116,7 +116,7 @@ export default function DashboardLayout({
                       )}
                     </Box>
                     <VStack align="flex-start" gap={0} flex={1}>
-                      <Text fontSize="xs" fontWeight="black" color="blue.900" isTruncated maxW="150px">
+                      <Text fontSize="xs" fontWeight="black" color="blue.900" truncate maxW="150px">
                         {user.name.toUpperCase()}
                       </Text>
                       <Text fontSize="10px" fontWeight="bold" color="blue.600">
