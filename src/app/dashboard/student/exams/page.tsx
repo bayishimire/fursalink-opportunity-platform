@@ -14,6 +14,7 @@ import {
   Image,
   Spinner,
   Center,
+  Separator,
   SimpleGrid
 } from '@chakra-ui/react'
 import {
