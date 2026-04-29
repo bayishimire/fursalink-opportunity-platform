@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import {
   Box,
   Button,
@@ -10,7 +10,9 @@ import {
   Text,
   VStack,
   HStack,
-  Icon
+  Icon,
+  Spinner,
+  Center
 } from '@chakra-ui/react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -19,7 +21,7 @@ import { Footer } from '@/components/Footer'
 import { FiUser, FiMail, FiLock, FiSend, FiEye, FiCheckCircle } from 'react-icons/fi'
 import { FcGoogle } from 'react-icons/fc'
 
-export default function RegisterPage() {
+function RegisterContent() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('')
@@ -296,5 +298,17 @@ export default function RegisterPage() {
 
       <Footer />
     </Flex>
+  )
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <Center minH="100vh">
+        <Spinner size="xl" />
+      </Center>
+    }>
+      <RegisterContent />
+    </Suspense>
   )
 }

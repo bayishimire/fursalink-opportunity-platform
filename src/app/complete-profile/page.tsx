@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
   Box, Button, Center, Flex, Heading, HStack,
@@ -31,7 +31,7 @@ const ROLES = [
   },
 ]
 
-export default function CompleteProfilePage() {
+function CompleteProfileContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [user, setUser] = useState<any>(null)
@@ -220,5 +220,13 @@ export default function CompleteProfilePage() {
         </Box>
       </Flex>
     </Flex>
+  )
+}
+
+export default function CompleteProfilePage() {
+  return (
+    <Suspense fallback={<Center minH="100vh"><Spinner size="xl" /></Center>}>
+      <CompleteProfileContent />
+    </Suspense>
   )
 }

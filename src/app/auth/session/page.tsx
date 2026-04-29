@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Center, Spinner, Text, VStack } from '@chakra-ui/react'
 
-export default function AuthSessionPage() {
+function AuthSessionContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -32,5 +32,17 @@ export default function AuthSessionPage() {
         <Text fontWeight="bold" color="gray.500">Signing you in with Google...</Text>
       </VStack>
     </Center>
+  )
+}
+
+export default function AuthSessionPage() {
+  return (
+    <Suspense fallback={
+      <Center minH="100vh" bg="white">
+        <Spinner size="xl" color="blue.500" />
+      </Center>
+    }>
+      <AuthSessionContent />
+    </Suspense>
   )
 }
