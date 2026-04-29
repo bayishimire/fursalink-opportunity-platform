@@ -222,16 +222,16 @@ function VerifyOTPContent() {
       <VStack position="fixed" bottom={8} width="full" gap={4} pointerEvents="none">
         <HStack gap={4} pointerEvents="auto" bg="whiteAlpha.800" backdropFilter="blur(8px)" px={6} py={3} rounded="full" shadow="lg" border="1px solid" borderColor="whiteAlpha.500">
           <Text fontSize="xs" fontWeight="black" color="gray.400" mr={2}>QUICK HELP:</Text>
-          <Link href="https://chat.whatsapp.com/DDyMtIB3P1sImRGeliAjl4?mode=gi_t" isExternal color="#25D366" _hover={{ transform: 'scale(1.2)' }} transition="0.2s">
+          <Link href="https://chat.whatsapp.com/DDyMtIB3P1sImRGeliAjl4?mode=gi_t" color="#25D366" _hover={{ transform: 'scale(1.2)' }} transition="0.2s">
             <FaWhatsapp size={20} />
           </Link>
-          <Link href="https://www.youtube.com/@samu.connect" isExternal color="#FF0000" _hover={{ transform: 'scale(1.2)' }} transition="0.2s">
+          <Link href="https://www.youtube.com/@samu.connect" color="#FF0000" _hover={{ transform: 'scale(1.2)' }} transition="0.2s">
             <FaYoutube size={20} />
           </Link>
-          <Link href="https://www.instagram.com/stories/cyber.hub22/3882911736865151776?utm_source=ig_story_item_share&igsh=aHJjNHJ6aWVqeTY5" isExternal color="#E4405F" _hover={{ transform: 'scale(1.2)' }} transition="0.2s">
+          <Link href="https://www.instagram.com/stories/cyber.hub22/3882911736865151776?utm_source=ig_story_item_share&igsh=aHJjNHJ6aWVqeTY5" color="#E4405F" _hover={{ transform: 'scale(1.2)' }} transition="0.2s">
             <FiInstagram size={20} />
           </Link>
-          <Link href="https://x.com" isExternal color="black" _hover={{ transform: 'scale(1.2)' }} transition="0.2s">
+          <Link href="https://x.com" color="black" _hover={{ transform: 'scale(1.2)' }} transition="0.2s">
             <FaXTwitter size={18} />
           </Link>
         </HStack>
