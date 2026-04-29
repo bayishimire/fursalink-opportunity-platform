@@ -496,7 +496,7 @@ export default function AdminDashboard() {
   const renderApplications = () => (
     <Box bg="white" p={6} rounded="3xl" shadow="sm" border="1px solid" borderColor="gray.50">
       <Heading size="md" mb={6} color="blue.900" fontWeight="900">Unified Enrollment Queue</Heading>
-      <Table.Root size="md" variant="plain">
+      <Table.Root size="md" variant="line">
         <Table.Header>
           <Table.Row borderBottom="1px solid" borderColor="gray.50">
             <Table.ColumnHeader py={3} fontSize="10px" color="gray.400">CANDIDATE</Table.ColumnHeader>

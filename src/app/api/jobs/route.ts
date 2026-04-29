@@ -24,17 +24,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    let image_url = null;
-    if (image) {
-      const matches = image.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-      if (matches && matches.length === 3) {
-        const buffer = Buffer.from(matches[2], 'base64');
-        const fileName = `${category}_${Date.now()}.png`;
-        await fs.mkdir('./public/uploads', { recursive: true });
-        await fs.writeFile(`./public/uploads/${fileName}`, buffer);
-        image_url = `/uploads/${fileName}`;
-      }
-    }
+    let image_url = image; // Store Base64 directly for Vercel/Cloud compatibility
 
     const pool = getDb();
     
