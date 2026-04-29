@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import {
   Box,
   Button,
@@ -11,7 +11,9 @@ import {
   Text,
   VStack,
   HStack,
-  IconButton
+  IconButton,
+  Spinner,
+  Center
 } from '@chakra-ui/react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -22,7 +24,7 @@ import { FiUser, FiLock, FiEye, FiLogIn, FiUserPlus, FiKey, FiHeadphones, FiAler
 import { FaWhatsapp } from 'react-icons/fa'
 import { FcGoogle } from 'react-icons/fc'
 
-export default function LoginPage() {
+function LoginContent() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -375,5 +377,17 @@ export default function LoginPage() {
 
       <Footer />
     </Flex>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <Center minH="100vh" bg="#f4f7f6">
+        <Spinner size="xl" color="blue.500" />
+      </Center>
+    }>
+      <LoginContent />
+    </Suspense>
   )
 }
