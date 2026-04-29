@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   Box, Button, Flex, Heading, Text, VStack, Avatar,
-  Spinner, Center, useToast, Badge, SimpleGrid,
+  Spinner, Center, Badge, SimpleGrid,
   Separator, Input, Icon, HStack
 } from '@chakra-ui/react'
 import { FiCamera, FiUser, FiMail, FiShield, FiStar, FiCalendar, FiUploadCloud, FiSave, FiCheckCircle } from 'react-icons/fi'
